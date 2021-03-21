@@ -9,17 +9,12 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from google.auth.transport.requests import Request
 
 def Create_Service(client_secret_file, api_name, api_version, *scopes):
-    #print(client_secret_file, api_name, api_version, scopes, sep='-')
     CLIENT_SECRET_FILE = client_secret_file
     API_SERVICE_NAME = api_name
     API_VERSION = api_version
     SCOPES = [scope for scope in scopes[0]]
-    #print(SCOPES)
-
     cred = None
-
     pickle_file = f'token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
-    #print(pickle_file)
 
     if os.path.exists(pickle_file):
         with open(pickle_file, 'rb') as token:
@@ -45,30 +40,21 @@ def Create_Service(client_secret_file, api_name, api_version, *scopes):
         return None
 
 def main():
-  # Create Service Instance
   CLIENT_SECRET_FILE = 'client_secret.json'
   API_NAME = 'gmail'
   API_VERSION = 'v1'
   SCOPES = ['https://mail.google.com/']
-  
   service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
   
-  # Send Email
-  #userID= 'me'
-  #receiver= 'noel.dolores@gmail.com'
-  #subject= 'test3'
-  #message= 'test3'
-  #attachments = ['README.md']
-  #emails.Send_Message_With_Attchments(service, userID, receiver, subject, message, attachments)
-  
-  # Check for Unread Emails
   message_info_list = emails.Get_Unread_Messages(service, 'me')
   for message in message_info_list:
   #  emails.Get_Attachments(service, 'me', message, "tmp/attachments/")
+
     info = emails.Get_Message_Info(service, 'me', message)
-    print("sender: " + info[0])
+
     print("thread id: " + info[1])
     print("message id: " + info[2])
+
     userID= 'me'
     receiver= info[0]
     subject= info[3]
