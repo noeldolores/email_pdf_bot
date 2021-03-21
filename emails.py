@@ -10,7 +10,7 @@ from email import encoders
 import mimetypes
 import re
 
-def Get_Attachments(service, user_id, msg_id, store_dir):
+def Get_Attachments(service, user_id, msg_id, store_dir): #working
     """Get and store attachment from Message with given id.
         Args:
             service: Authorized Gmail API service instance.
@@ -79,7 +79,7 @@ def Send_Message_With_Attchments(service, userID, receiver, subject, message, at
       userId=userID,
       body={'raw': raw_string}).execute()
 
-def Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id):
+def Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id): #not working
   # Create email message
   emailMsg = message
   mimeMessage = MIMEMultipart()
@@ -114,9 +114,7 @@ def Reply_With_Attchments(service, userID, receiver, subject, message, attachmen
   raw_string = {'raw':base64.urlsafe_b64encode(mimeMessage.as_bytes()).decode()}
   raw_string['threadId']=threadId
   
-  message = service.users().messages().send(
-      userId=userID,
-      body=raw_string).execute()
+  message = service.users().messages().send(userId=userID, body=raw_string).execute()
 
 def Get_Unread_Messages(service, userId): #working
   message_list = []
@@ -128,15 +126,19 @@ def Get_Unread_Messages(service, userId): #working
 
   return message_list
 
-def Get_Message_Info(service, userId, message_id):
+def Get_Message_Info(service, userId, message_id): #working
   message_info = service.users().messages().get(userId=userId, id=message_id).execute()
-  #message_info = message_info['payload']['headers'][16]['value']
+
   sender_index = 16
-  message_id_index = 18
-  subject_index = 19
   sender = re.search(r"[<](.*)[>]", message_info['payload']['headers'][sender_index]['value'])
+
   thread_id = message_info['threadId']
+
+  message_id_index = 18
   message_id = re.search(r"[<](.*)[>]", message_info['payload']['headers'][message_id_index]['value'])
+
+  subject_index = 19
   subject = message_info['payload']['headers'][subject_index]['value']
+
   info = (sender[1], thread_id, message_id[1], subject)
   return info
