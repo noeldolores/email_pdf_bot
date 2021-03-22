@@ -72,8 +72,13 @@ def main():
 
       # Combine PDFs
       new_pdf = pdf.combine_pdfs(temp_folder)
-      attachments = temp_folder + 'new_pdf.pdf'
-      
+      if new_pdf[0] != False:
+        attachments = temp_folder + 'new_pdf.pdf'
+      else:
+        attachments = None
+        message += '\n\nAt least one file is not a PDF, including:\n{}'.format(new_pdf[1])
+        message += '\n\nPlease resend the correct files'
+
       # Reply to and Mark Email as Read 
       emails.Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id)
       
@@ -86,7 +91,7 @@ def main():
       except OSError as e:
         print("Error: %s : %s" % (dir_path, e.strerror))
   else:
-    print("No Messages")
+    print(len(message_info_list))
 
 if __name__ == "__main__":
   main()

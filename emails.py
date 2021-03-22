@@ -46,39 +46,6 @@ def Get_Attachments(service, user_id, msg_id, store_dir): #working
     except errors.HttpError as error:
         print('An error occurred: %s' % error)
 
-def Send_Message_With_Attchments(service, userID, receiver, subject, message, attachments): #working
-  # Create email message
-  emailMsg = message
-  mimeMessage = MIMEMultipart()
-  mimeMessage['to'] = receiver
-  mimeMessage['subject'] = subject
-  mimeMessage.attach(MIMEText(emailMsg, 'plain'))
-  
-  # Attach files
-  file_attachments = attachments
-
-  for attachment in file_attachments:
-      content_type, encoding = mimetypes.guess_type(attachment)
-      main_type, sub_type = content_type.split('/', 1)
-      file_name = os.path.basename(attachment)
-  
-      f = open(attachment, 'rb')
-  
-      myFile = MIMEBase(main_type, sub_type)
-      myFile.set_payload(f.read())
-      myFile.add_header('Content-Disposition', 'attachment', filename=file_name)
-      encoders.encode_base64(myFile)
-  
-      f.close()
-  
-      mimeMessage.attach(myFile)
-  
-  raw_string = base64.urlsafe_b64encode(mimeMessage.as_bytes()).decode()
-  
-  message = service.users().messages().send(
-      userId=userID,
-      body={'raw': raw_string}).execute()
-
 def Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id): #working, but receiver message isn't threaded
   # Create email message
   emailMsg = message
@@ -93,21 +60,22 @@ def Reply_With_Attchments(service, userID, receiver, subject, message, attachmen
   mimeMessage.attach(MIMEText(emailMsg, 'plain'))
   
   # Attach files
-  attachment = attachments
-  content_type, encoding = mimetypes.guess_type(attachment)
-  main_type, sub_type = content_type.split('/', 1)
-  file_name = os.path.basename(attachment)
+  if attachments != None:
+    attachment = attachments
+    content_type, encoding = mimetypes.guess_type(attachment)
+    main_type, sub_type = content_type.split('/', 1)
+    file_name = os.path.basename(attachment)
 
-  f = open(attachment, 'rb')
+    f = open(attachment, 'rb')
 
-  myFile = MIMEBase(main_type, sub_type)
-  myFile.set_payload(f.read())
-  myFile.add_header('Content-Disposition', 'attachment', filename=file_name)
-  encoders.encode_base64(myFile)
+    myFile = MIMEBase(main_type, sub_type)
+    myFile.set_payload(f.read())
+    myFile.add_header('Content-Disposition', 'attachment', filename=file_name)
+    encoders.encode_base64(myFile)
 
-  f.close()
+    f.close()
 
-  mimeMessage.attach(myFile)
+    mimeMessage.attach(myFile)
   
   raw_string = {'raw':base64.urlsafe_b64encode(mimeMessage.as_bytes()).decode()}
   raw_string['threadId']=threadId
