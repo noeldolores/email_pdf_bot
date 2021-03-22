@@ -38,7 +38,7 @@ def combine_pdfs(folder):
     files.close()
   new_pdf.close()
 
-  return new_pdf
+  return True, new_pdf
 
 
 def fix_pdf_eof_error(folder, pdf):

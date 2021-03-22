@@ -11,13 +11,16 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from google.auth.transport.requests import Request
 import pdf
 
+global _path
+_path = "/home/noel/Email PDF Bot/"
+
 def Create_Service(client_secret_file, api_name, api_version, *scopes):
     CLIENT_SECRET_FILE = client_secret_file
     API_SERVICE_NAME = api_name
     API_VERSION = api_version
     SCOPES = [scope for scope in scopes[0]]
     cred = None
-    pickle_file = f'token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
+    pickle_file = _path + f'token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
 
     if os.path.exists(pickle_file):
         with open(pickle_file, 'rb') as token:
@@ -43,7 +46,7 @@ def Create_Service(client_secret_file, api_name, api_version, *scopes):
         return None
 
 def main():
-  CLIENT_SECRET_FILE = 'client_secret.json'
+  CLIENT_SECRET_FILE = _path + "client_secret.json"
   API_NAME = 'gmail'
   API_VERSION = 'v1'
   SCOPES = ['https://mail.google.com/']
@@ -62,7 +65,7 @@ def main():
       message_id = info[3]
       
       # Downloads attachments to temp folder
-      temp_folder = "tmp/attachments/{}/".format(threadId)
+      temp_folder = _path + "tmp/attachments/{}/".format(threadId)
       Path(temp_folder).mkdir(parents=True, exist_ok=True)
       emails.Get_Attachments(service, 'me', message, temp_folder)
       
