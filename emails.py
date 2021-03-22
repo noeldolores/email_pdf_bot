@@ -94,22 +94,19 @@ def Get_Unread_Messages(service, userId): #working
 
 def Get_Message_Info(service, userId, message_id): #working
   message_info = service.users().messages().get(userId=userId, id=message_id).execute()
-
-  sender_index = 16
-  sender = re.search(r"[<](.*)[>]", message_info['payload']['headers'][sender_index]['value'])
-
   thread_id = message_info['threadId']
+  header_list = message_info['payload']['headers']
+  for header in header_list:
+    if header['name']=='Message-ID':
+      message_id=header['value']
+    if header['name']=='From':
+      sender=header['value']
+    if header['name']=='Subject':
+      subject=header['value']
 
-  message_id_index = 18
-  message_id = re.search(r"[<](.*)[>]", message_info['payload']['headers'][message_id_index]['value'])
-
-  subject_index = 19
-  subject = message_info['payload']['headers'][subject_index]['value']
-
-  info = (sender[1], subject, thread_id, message_id[1])
-
+  info = (sender, subject, thread_id, message_id)
   return info
 
 def Mark_As_Read(service, userId, message_id):
   mark_read = {'removeLabelIds': ['UNREAD']}
-  service.users().messages().modify(userId=userId, id=message_id, body=mark_read).execute()
+  service.users().messages().modify(userId=userId, id=message_id, body=mark_read).execute()                
