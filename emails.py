@@ -79,37 +79,35 @@ def Send_Message_With_Attchments(service, userID, receiver, subject, message, at
       userId=userID,
       body={'raw': raw_string}).execute()
 
-def Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id): #not working
+def Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id): #working, but receiver message isn't threaded
   # Create email message
   emailMsg = message
   mimeMessage = MIMEMultipart()
   mimeMessage['to'] = receiver
   mimeMessage['subject'] = subject
-  #mimeMessage['threadId'] = threadId
-  #mimeMessage['In-Reply-To'] = message_id
+  mimeMessage['threadId'] = threadId
+  mimeMessage['In-Reply-To'] = message_id
   mimeMessage.add_header('In-Reply-To', message_id)
   mimeMessage.add_header('References', message_id)
-  #mimeMessage['References'] = message_id
+  mimeMessage['References'] = message_id
   mimeMessage.attach(MIMEText(emailMsg, 'plain'))
   
   # Attach files
-  file_attachments = attachments
+  attachment = attachments
+  content_type, encoding = mimetypes.guess_type(attachment)
+  main_type, sub_type = content_type.split('/', 1)
+  file_name = os.path.basename(attachment)
 
-  for attachment in file_attachments:
-      content_type, encoding = mimetypes.guess_type(attachment)
-      main_type, sub_type = content_type.split('/', 1)
-      file_name = os.path.basename(attachment)
-  
-      f = open(attachment, 'rb')
-  
-      myFile = MIMEBase(main_type, sub_type)
-      myFile.set_payload(f.read())
-      myFile.add_header('Content-Disposition', 'attachment', filename=file_name)
-      encoders.encode_base64(myFile)
-  
-      f.close()
-  
-      mimeMessage.attach(myFile)
+  f = open(attachment, 'rb')
+
+  myFile = MIMEBase(main_type, sub_type)
+  myFile.set_payload(f.read())
+  myFile.add_header('Content-Disposition', 'attachment', filename=file_name)
+  encoders.encode_base64(myFile)
+
+  f.close()
+
+  mimeMessage.attach(myFile)
   
   raw_string = {'raw':base64.urlsafe_b64encode(mimeMessage.as_bytes()).decode()}
   raw_string['threadId']=threadId
@@ -119,10 +117,10 @@ def Reply_With_Attchments(service, userID, receiver, subject, message, attachmen
 def Get_Unread_Messages(service, userId): #working
   message_list = []
   message_ids = service.users().messages().list(userId=userId, labelIds='INBOX', alt="json", q='is:unread has:attachment').execute()
-
-  for message in message_ids['messages']:
-    #print(message)
-    message_list.append(message['id'])
+  
+  if message_ids['resultSizeEstimate'] > 0:
+    for message in message_ids['messages']:
+      message_list.append(message['id'])
 
   return message_list
 
@@ -140,5 +138,10 @@ def Get_Message_Info(service, userId, message_id): #working
   subject_index = 19
   subject = message_info['payload']['headers'][subject_index]['value']
 
-  info = (sender[1], thread_id, message_id[1], subject)
+  info = (sender[1], subject, thread_id, message_id[1])
+
   return info
+
+def Mark_As_Read(service, userId, message_id):
+  mark_read = {'removeLabelIds': ['UNREAD']}
+  service.users().messages().modify(userId=userId, id=message_id, body=mark_read).execute()

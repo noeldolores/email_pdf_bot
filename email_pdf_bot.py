@@ -3,10 +3,13 @@
 import emails
 import pickle
 import os
+from pathlib import Path
+import shutil
 from google_auth_oauthlib.flow import Flow, InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from google.auth.transport.requests import Request
+import pdf
 
 def Create_Service(client_secret_file, api_name, api_version, *scopes):
     CLIENT_SECRET_FILE = client_secret_file
@@ -45,24 +48,45 @@ def main():
   API_VERSION = 'v1'
   SCOPES = ['https://mail.google.com/']
   service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+
+  userID= 'me'
   
   message_info_list = emails.Get_Unread_Messages(service, 'me')
-  for message in message_info_list:
-  #  emails.Get_Attachments(service, 'me', message, "tmp/attachments/")
+  if len(message_info_list) > 0:
+    for message in message_info_list:
+      info = emails.Get_Message_Info(service, 'me', message)
 
-    info = emails.Get_Message_Info(service, 'me', message)
+      receiver= info[0]
+      subject= info[1]
+      threadId = info[2]
+      message_id = info[3]
+      
+      # Downloads attachments to temp folder
+      temp_folder = "tmp/attachments/{}/".format(threadId)
+      Path(temp_folder).mkdir(parents=True, exist_ok=True)
+      emails.Get_Attachments(service, 'me', message, temp_folder)
+      
+      message= "You sent me these files: "
+      for file in os.listdir(temp_folder):
+        message += '\n'+file
 
-    print("thread id: " + info[1])
-    print("message id: " + info[2])
+      # Combine PDFs
+      new_pdf = pdf.combine_pdfs(temp_folder)
+      attachments = temp_folder + 'new_pdf.pdf'
+      
+      # Reply to and Mark Email as Read 
+      emails.Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id)
+      
+      emails.Mark_As_Read(service, userID, threadId)
 
-    userID= 'me'
-    receiver= info[0]
-    subject= info[3]
-    message= 'test3'
-    attachments = ['README.md']
-    threadId = info[1]
-    message_id = info[2]
-    emails.Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id)
+      # Delete Temporary Files
+      dir_path=Path(temp_folder)
+      try:
+        shutil.rmtree(dir_path)
+      except OSError as e:
+        print("Error: %s : %s" % (dir_path, e.strerror))
+  else:
+    print("No Messages")
 
 if __name__ == "__main__":
   main()
