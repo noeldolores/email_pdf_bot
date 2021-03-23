@@ -1,3 +1,4 @@
 client_secret.json
 token_gmail_v1.pickle
 tmp/attachments/*
+__pycache__
