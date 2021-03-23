@@ -16,7 +16,8 @@ import pdf
 
 def main():
   _path = "/home/noel/Email PDF Bot/"
-
+  
+  # Connects to google gmail service
   CLIENT_SECRET_FILE = _path + "client_secret.json"
   API_NAME = 'gmail'
   API_VERSION = 'v1'
@@ -25,6 +26,7 @@ def main():
 
   userID= 'me'
   
+  #  Checks for and retrieves unread messages with attachments
   message_info_list = emails.Get_Unread_Messages(service, 'me')
   if len(message_info_list) > 0:
     for message in message_info_list:
