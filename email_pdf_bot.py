@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
 
-#import emails
-#import pickle
 import os
 from pathlib import Path
 import shutil
 import gmail_service
 import emails
 import pdf
-
-#global _path
-#_path = "/home/noel/Email PDF Bot/"
-
 
 
 def main():

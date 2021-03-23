@@ -8,7 +8,6 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 import mimetypes
-import re
 
 def Get_Attachments(service, user_id, msg_id, store_dir): #working
     """Get and store attachment from Message with given id.
