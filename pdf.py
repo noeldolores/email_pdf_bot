@@ -4,7 +4,6 @@ import PyPDF2
 import os
 
 def combine_pdfs(folder):
-  is_pdf = True
   writer = PyPDF2.PdfFileWriter()
   pdf_list = os.listdir(folder)
   files_to_close = []
@@ -28,7 +27,6 @@ def combine_pdfs(folder):
         writer.addPage(pageObj)
     else:
       #print("Wrong file type (not .pdf) : " + pdf)
-      is_pdf = False
       return False, pdf
 
 

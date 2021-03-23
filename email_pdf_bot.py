@@ -1,56 +1,27 @@
 #!/usr/bin/env python3
 
-import emails
-import pickle
+#import emails
+#import pickle
 import os
 from pathlib import Path
 import shutil
-from google_auth_oauthlib.flow import Flow, InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
-from google.auth.transport.requests import Request
+import gmail_service
+import emails
 import pdf
 
-global _path
-_path = "/home/noel/Email PDF Bot/"
+#global _path
+#_path = "/home/noel/Email PDF Bot/"
 
-def Create_Service(client_secret_file, api_name, api_version, *scopes):
-    CLIENT_SECRET_FILE = client_secret_file
-    API_SERVICE_NAME = api_name
-    API_VERSION = api_version
-    SCOPES = [scope for scope in scopes[0]]
-    cred = None
-    pickle_file = _path + f'token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
 
-    if os.path.exists(pickle_file):
-        with open(pickle_file, 'rb') as token:
-            cred = pickle.load(token)
-
-    if not cred or not cred.valid:
-        if cred and cred.expired and cred.refresh_token:
-            cred.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE, SCOPES)
-            cred = flow.run_local_server()
-
-        with open(pickle_file, 'wb') as token:
-            pickle.dump(cred, token)
-
-    try:
-        service = build(API_SERVICE_NAME, API_VERSION, credentials=cred)
-        print(API_SERVICE_NAME, 'connection successful')
-        return service
-    except Exception as e:
-        print('Unable to connect.')
-        print(e)
-        return None
 
 def main():
+  _path = "/home/noel/Email PDF Bot/"
+
   CLIENT_SECRET_FILE = _path + "client_secret.json"
   API_NAME = 'gmail'
   API_VERSION = 'v1'
   SCOPES = ['https://mail.google.com/']
-  service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+  service = gmail_service.Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
 
   userID= 'me'
   
@@ -69,11 +40,12 @@ def main():
       Path(temp_folder).mkdir(parents=True, exist_ok=True)
       emails.Get_Attachments(service, 'me', message, temp_folder)
       
+      # Create message body and list files
       message= "You sent me these files: "
       for file in os.listdir(temp_folder):
         message += '\n'+file
 
-      # Combine PDFs
+      # Combine PDFs and and error messages to body
       new_pdf = pdf.combine_pdfs(temp_folder)
       if new_pdf[0] != False:
         attachments = temp_folder + 'new_pdf.pdf'
@@ -94,7 +66,7 @@ def main():
       except OSError as e:
         print("Error: %s : %s" % (dir_path, e.strerror))
   else:
-    print(len(message_info_list))
+    print("No messages to process")
 
 if __name__ == "__main__":
   main()
