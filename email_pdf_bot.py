@@ -41,7 +41,7 @@ def main():
       for file in os.listdir(temp_folder):
         message += '\n'+file
 
-      # Combine PDFs and and error messages to body
+      # Combine PDFs and add error messages to body
       new_pdf = pdf.combine_pdfs(temp_folder)
       if new_pdf[0] != False:
         attachments = temp_folder + 'new_pdf.pdf'
@@ -50,17 +50,24 @@ def main():
         message += '\n\nAt least one file is not a PDF, including:\n{}'.format(new_pdf[1])
         message += '\n\nPlease resend the correct files'
 
-      # Reply to and Mark Email as Read 
+      # Reply to Email
       emails.Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id)
       
-      emails.Mark_As_Read(service, userID, threadId)
-
+      # Permanently Delete Message
+      emails.Delete_Message(service, userID, threadId)
+      
       # Delete Temporary Files
       dir_path=Path(temp_folder)
       try:
         shutil.rmtree(dir_path)
       except OSError as e:
         print("Error: %s : %s" % (dir_path, e.strerror))
+
+      # Increment Use Tally
+      with open(_path + 'tally.txt', 'r+') as t:
+        tally = int(t.read()) + 1
+        t.seek(0)
+        t.write(str(tally))
   else:
     print("No messages to process")
 

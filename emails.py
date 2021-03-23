@@ -106,6 +106,5 @@ def Get_Message_Info(service, userId, message_id): #working
   info = (sender, subject, thread_id, message_id)
   return info
 
-def Mark_As_Read(service, userId, message_id):
-  mark_read = {'removeLabelIds': ['UNREAD']}
-  service.users().messages().modify(userId=userId, id=message_id, body=mark_read).execute()                
+def Delete_Message(service, userId, message_id):
+  service.users().messages().delete(userId=userId, id=message_id).execute()                
