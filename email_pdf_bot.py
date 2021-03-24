@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 from pathlib import Path
 import shutil
 import gmail_service
@@ -30,6 +29,7 @@ def main():
       subject= info[1]
       threadId = info[2]
       message_id = info[3]
+      attachment_list = info[4]
       
       # Downloads attachments to temp folder
       temp_folder = _path + "tmp/attachments/{}/".format(threadId)
@@ -38,11 +38,11 @@ def main():
       
       # Create message body and list files
       message= "You sent me these files: "
-      for file in os.listdir(temp_folder):
-        message += '\n'+file
+      for item in attachment_list:
+        message += '\n'+ item
 
       # Combine PDFs and add error messages to body
-      new_pdf = pdf.combine_pdfs(temp_folder)
+      new_pdf = pdf.combine_pdfs(temp_folder, attachment_list)
       if new_pdf[0] != False:
         attachments = temp_folder + 'new_pdf.pdf'
       else:

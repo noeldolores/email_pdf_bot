@@ -94,17 +94,22 @@ def Get_Unread_Messages(service, userId): #working
 def Get_Message_Info(service, userId, message_id): #working
   message_info = service.users().messages().get(userId=userId, id=message_id).execute()
   thread_id = message_info['threadId']
-  header_list = message_info['payload']['headers']
-  for header in header_list:
+  header_info = message_info['payload']['headers']
+  for header in header_info:
     if header['name']=='Message-ID':
       message_id=header['value']
     if header['name']=='From':
       sender=header['value']
     if header['name']=='Subject':
       subject=header['value']
+  attachment_info = message_info['payload']['parts']
+  attachment_list = []
+  for attachment in attachment_info:
+    if attachment['mimeType'] == 'application/pdf':
+      attachment_list.append(attachment['filename'])
 
-  info = (sender, subject, thread_id, message_id)
+  info = (sender, subject, thread_id, message_id, attachment_list)
   return info
 
 def Delete_Message(service, userId, message_id):
-  service.users().messages().delete(userId=userId, id=message_id).execute()                
+  service.users().messages().delete(userId=userId, id=message_id).execute()

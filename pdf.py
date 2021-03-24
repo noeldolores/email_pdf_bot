@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
 import PyPDF2
-import os
 
-def combine_pdfs(folder):
+def combine_pdfs(folder, attachment_list):
   writer = PyPDF2.PdfFileWriter()
-  pdf_list = os.listdir(folder)
+  pdf_list = attachment_list
   files_to_close = []
 
   for pdf in pdf_list:
