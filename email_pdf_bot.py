@@ -30,6 +30,7 @@ def main():
       threadId = info[2]
       message_id = info[3]
       attachment_list = info[4]
+      ID = info[5]
       
       # Downloads attachments to temp folder
       temp_folder = _path + "tmp/attachments/{}/".format(threadId)
@@ -54,7 +55,7 @@ def main():
       emails.Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id)
       
       # Permanently Delete Message
-      emails.Delete_Message(service, userID, threadId)
+      emails.Delete_Message(service, userID, ID)
       
       # Delete Temporary Files
       dir_path=Path(temp_folder)

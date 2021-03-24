@@ -93,6 +93,8 @@ def Get_Unread_Messages(service, userId): #working
 
 def Get_Message_Info(service, userId, message_id): #working
   message_info = service.users().messages().get(userId=userId, id=message_id).execute()
+
+  ID = message_info['id']
   thread_id = message_info['threadId']
   header_info = message_info['payload']['headers']
   for header in header_info:
@@ -108,7 +110,7 @@ def Get_Message_Info(service, userId, message_id): #working
     if attachment['mimeType'] == 'application/pdf':
       attachment_list.append(attachment['filename'])
 
-  info = (sender, subject, thread_id, message_id, attachment_list)
+  info = (sender, subject, thread_id, message_id, attachment_list, ID)
   return info
 
 def Delete_Message(service, userId, message_id):
