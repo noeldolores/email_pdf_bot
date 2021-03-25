@@ -92,7 +92,7 @@ def Reply_With_Attchment(service, userId, receiver, subject, message, attachment
   message = service.users().messages().send(userId=userId, body=raw_string).execute()
 
 def Get_Unread_Messages(service, userId):
-  """Reply to message with the new pdf attached.
+  """Retrieves all unread messages with attachments, returns list of message ids.
         Args:
             service: Authorized Gmail API service instance.
             userId: User's email address. The special value "me".
@@ -108,7 +108,7 @@ def Get_Unread_Messages(service, userId):
   return message_list
 
 def Get_Message_Info(service, userId, message_id):
-  """Reply to message with the new pdf attached.
+  """Retrieves received message info, returns tuple.
         Args:
             service: Authorized Gmail API service instance.
             userId: User's email address. The special value "me".
@@ -137,7 +137,7 @@ def Get_Message_Info(service, userId, message_id):
   return info
 
 def Delete_Message(service, userId, message_id):
-  """Reply to message with the new pdf attached.
+  """Permanently delete message.
         Args:
             service: Authorized Gmail API service instance.
             userId: User's email address. The special value "me".
