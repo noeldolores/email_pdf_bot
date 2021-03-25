@@ -43,7 +43,7 @@ def main():
         message += '\n'+ item
 
       # Combine PDFs and add error messages to body
-      new_pdf = pdf.combine_pdfs(temp_folder, attachment_list)
+      new_pdf = pdf.Combine_Pdfs(temp_folder, attachment_list)
       if new_pdf[0] != False:
         attachments = temp_folder + 'new_pdf.pdf'
       else:
@@ -52,7 +52,7 @@ def main():
         message += '\n\nPlease resend the correct files'
 
       # Reply to Email
-      emails.Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id)
+      emails.Reply_With_Attchment(service, userID, receiver, subject, message, attachments, threadId, message_id)
       
       # Permanently Delete Message
       emails.Delete_Message(service, userID, ID)

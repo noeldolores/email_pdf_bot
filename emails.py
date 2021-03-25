@@ -9,17 +9,17 @@ from email.mime.base import MIMEBase
 from email import encoders
 import mimetypes
 
-def Get_Attachments(service, user_id, msg_id, store_dir): #working
+def Get_Attachments(service, userId, msg_id, store_dir):
     """Get and store attachment from Message with given id.
         Args:
             service: Authorized Gmail API service instance.
-            user_id: User's email address. The special value "me"
+            userId: User's email address. The special value "me"
                 can be used to indicate the authenticated user.
             msg_id: ID of Message containing attachment.
             store_dir: The directory used to store attachments.
     """
     try:
-        message = service.users().messages().get(userId=user_id, id=msg_id).execute()
+        message = service.users().messages().get(userId=userId, id=msg_id).execute()
         parts = [message['payload']]
         while parts:
             part = parts.pop()
@@ -31,7 +31,7 @@ def Get_Attachments(service, user_id, msg_id, store_dir): #working
                     #self.stdout.write('FileData for %s, %s found! size: %s' % (message['id'], part['filename'], part['size']))
                 elif 'attachmentId' in part['body']:
                     attachment = service.users().messages().attachments().get(
-                        userId=user_id, messageId=message['id'], id=part['body']['attachmentId']
+                        userId=userId, messageId=message['id'], id=part['body']['attachmentId']
                     ).execute()
                     file_data = base64.urlsafe_b64decode(attachment['data'].encode('UTF-8'))
                     #self.stdout.write('FileData for %s, %s found! size: %s' % (message['id'], part['filename'], attachment['size']))
@@ -45,7 +45,19 @@ def Get_Attachments(service, user_id, msg_id, store_dir): #working
     except errors.HttpError as error:
         print('An error occurred: %s' % error)
 
-def Reply_With_Attchments(service, userID, receiver, subject, message, attachments, threadId, message_id): #working, but receiver message isn't threaded
+def Reply_With_Attchment(service, userId, receiver, subject, message, attachments, threadId, message_id):
+  """Reply to message with the new pdf attached.
+        Args:
+            service: Authorized Gmail API service instance.
+            userId: User's email address. The special value "me".
+                can be used to indicate the authenticated user.
+            receiver: Email address of who to send to.
+            subject: Email subject.
+            message: Email message, plain text
+            attachments: 'new_pdf.pdf' Name can be changed in pdf.combine_pdfs
+            threadId: Used to match reply with message thread
+            message_id: Identifies specific message to interact with.
+    """
   # Create email message
   emailMsg = message
   mimeMessage = MIMEMultipart()
@@ -53,16 +65,14 @@ def Reply_With_Attchments(service, userID, receiver, subject, message, attachmen
   mimeMessage['subject'] = subject
   mimeMessage['threadId'] = threadId
   mimeMessage['In-Reply-To'] = message_id
-  mimeMessage.add_header('In-Reply-To', message_id)
-  mimeMessage.add_header('References', message_id)
   mimeMessage['References'] = message_id
   mimeMessage.attach(MIMEText(emailMsg, 'plain'))
   
   # Attach files
   if attachments != None:
     attachment = attachments
-    content_type, encoding = mimetypes.guess_type(attachment)
-    main_type, sub_type = content_type.split('/', 1)
+    content_type = mimetypes.guess_type(attachment)
+    main_type, sub_type = content_type[0].split('/', 1)
     file_name = os.path.basename(attachment)
 
     f = open(attachment, 'rb')
@@ -79,9 +89,15 @@ def Reply_With_Attchments(service, userID, receiver, subject, message, attachmen
   raw_string = {'raw':base64.urlsafe_b64encode(mimeMessage.as_bytes()).decode()}
   raw_string['threadId']=threadId
   
-  message = service.users().messages().send(userId=userID, body=raw_string).execute()
+  message = service.users().messages().send(userId=userId, body=raw_string).execute()
 
-def Get_Unread_Messages(service, userId): #working
+def Get_Unread_Messages(service, userId):
+  """Reply to message with the new pdf attached.
+        Args:
+            service: Authorized Gmail API service instance.
+            userId: User's email address. The special value "me".
+                can be used to indicate the authenticated user.
+    """
   message_list = []
   message_ids = service.users().messages().list(userId=userId, labelIds='INBOX', alt="json", q='is:unread has:attachment').execute()
   
@@ -91,7 +107,14 @@ def Get_Unread_Messages(service, userId): #working
 
   return message_list
 
-def Get_Message_Info(service, userId, message_id): #working
+def Get_Message_Info(service, userId, message_id):
+  """Reply to message with the new pdf attached.
+        Args:
+            service: Authorized Gmail API service instance.
+            userId: User's email address. The special value "me".
+                can be used to indicate the authenticated user.
+            message_id: Identifies specific message to interact with.
+    """
   message_info = service.users().messages().get(userId=userId, id=message_id).execute()
 
   ID = message_info['id']
@@ -114,4 +137,11 @@ def Get_Message_Info(service, userId, message_id): #working
   return info
 
 def Delete_Message(service, userId, message_id):
+  """Reply to message with the new pdf attached.
+        Args:
+            service: Authorized Gmail API service instance.
+            userId: User's email address. The special value "me".
+                can be used to indicate the authenticated user.
+            message_id: Identifies specific message to interact with.
+    """
   service.users().messages().delete(userId=userId, id=message_id).execute()

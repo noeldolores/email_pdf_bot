@@ -2,7 +2,12 @@
 
 import PyPDF2
 
-def combine_pdfs(folder, attachment_list):
+def Combine_Pdfs(folder, attachment_list):
+  """Reply to message with the new pdf attached.
+        Args:
+            folder: Absolute path to folder containing pdfs to combine.
+            attachment_list: List that holds specific order of pdfs to combine.
+    """
   writer = PyPDF2.PdfFileWriter()
   pdf_list = attachment_list
   files_to_close = []
@@ -14,7 +19,7 @@ def combine_pdfs(folder, attachment_list):
         files_to_close.append(to_add)
         to_add_reader = PyPDF2.PdfFileReader(to_add, strict=False)
       except PyPDF2.utils.PdfReadError:
-        fixed = fix_pdf_eof_error(folder, pdf)
+        fixed = Fix_Pdf_Eof_Error(folder, pdf)
         to_add = open('{}{}'.format(folder, fixed), 'rb')
         files_to_close.append(to_add)
         to_add_reader = PyPDF2.PdfFileReader(to_add, strict=False)
@@ -38,7 +43,12 @@ def combine_pdfs(folder, attachment_list):
   return True, new_pdf
 
 
-def fix_pdf_eof_error(folder, pdf):
+def Fix_Pdf_Eof_Error(folder, pdf):
+  """Reply to message with the new pdf attached.
+        Args:
+            folder: Absolute path to folder containing pdfs to combine.
+            pdf: Pdf file to add EOF marker to.
+    """
   fixed = 'fixed.pdf'
   with open(folder + pdf, 'rb') as p:
     txt = (p.readlines())
