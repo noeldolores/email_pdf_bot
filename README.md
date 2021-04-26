@@ -1,5 +1,5 @@
-A Python script that monitors an email address for messages with PDF attachmnets. If detected, the script will combine all
-PDFs, in listed order, and reply to the message with the combined PDF attached.<br/><br/>
+A Python script that monitors an email address for messages with PDF attachments. If detected, the script will combine
+all PDFs, in listed order, and reply to the message with the combined PDF attached.<br/><br/>
 
 
 Problem:<br/>
