@@ -54,7 +54,7 @@ def main():
       # Reply to Email
       emails.Reply_With_Attchment(service, userID, receiver, subject, message, attachments, threadId, message_id)
       
-      # Permanently Delete Message
+      # Delete Message
       emails.Delete_Message(service, userID, ID)
       
       # Delete Temporary Files
