@@ -12,9 +12,9 @@ Solution:
 2. Create an email address to which you can send PDF files, and receive them back combined.
 
 
-This utilizes the Gmail API:
-\nhttps://developers.google.com/gmail/api/quickstart/python
+This utilizes the Gmail API:<br/>
+https://developers.google.com/gmail/api/quickstart/python
 
 
-Try it out:
-\npython.pdf.combine@gmail.com
+Try it out:<br/>
+python.pdf.combine@gmail.com
