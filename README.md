@@ -5,11 +5,11 @@ PDFs, in listed order, and reply to the message with the combined PDF attached.
 Problem:
 1. At my workplace there are multiple printouts/handouts/etc that must be provided to patients for various provided services.
 2. These are updated frequently, and would be more efficient for printing, sorting, and handing out as a single printable file. 
-2. Internally, there is very limited access to external websites/online tools.
+3. Internally, there is very limited access to external websites/online tools.
 
 Solution:
 1. Use email as a workaround.
-1. Create an email address to which you can send PDF files, and receive them back combined.
+2. Create an email address to which you can send PDF files, and receive them back combined.
 
 
 This utilizes the Gmail API: https://developers.google.com/gmail/api/quickstart/python
