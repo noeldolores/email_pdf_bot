@@ -17,7 +17,7 @@ Solution:<br/>
 
 
 This utilizes the Gmail API:<br/>
-https://developers.google.com/gmail/api/quickstart/python<br/>
+https://developers.google.com/gmail/api/quickstart/python<br/><br/>
 
 
 Try it out:<br/>
