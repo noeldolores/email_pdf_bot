@@ -1,5 +1,5 @@
 A Python script that monitors an email address for messages with PDF attachmnets. If detected, the script will combine all
-PDFs, in listed order, and reply to the message with the combined PDF attached.<br/>
+PDFs, in listed order, and reply to the message with the combined PDF attached.<br/><br/>
 
 
 Problem:<br/>
@@ -17,7 +17,7 @@ Solution:<br/>
 
 
 This utilizes the Gmail API:<br/>
-https://developers.google.com/gmail/api/quickstart/python
+https://developers.google.com/gmail/api/quickstart/python<br/>
 
 
 Try it out:<br/>
